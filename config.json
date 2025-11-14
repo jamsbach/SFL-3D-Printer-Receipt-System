@@ -1,0 +1,166 @@
+{
+    "3d_printer_fdm": {
+        "display_name": "3D Printer (FDM)",
+        "unit_label": "Filament (grams)",
+        "unit_suffix": "g",
+        "specific_machines": [
+            "Prusa MK4s",
+            "Prusa XL",
+            "Ultimaker",
+            "Markforged"
+        ],
+        "materials": [
+            {
+                "name": "PLA",
+                "cost_per_unit": 0.08
+            },
+            {
+                "name": "PETG",
+                "cost_per_unit": 0.08
+            },
+            {
+                "name": "TPU",
+                "cost_per_unit": 0.1
+            },
+            {
+                "name": "Other",
+                "cost_per_unit": 0.0,
+                "custom_cost": true
+            }
+        ]
+    },
+    "3d_printer_resin": {
+        "display_name": "3D Printer (Resin)",
+        "unit_label": "Resin (ml)",
+        "unit_suffix": "ml",
+        "specific_machines": [
+            "Form 4",
+            "Form 3L",
+            "Xip"
+        ],
+        "materials": [
+            {
+                "name": "Standard Resin",
+                "cost_per_unit": 0.3
+            },
+            {
+                "name": "Tough Resin",
+                "cost_per_unit": 0.4
+            },
+            {
+                "name": "Other",
+                "cost_per_unit": 0.0,
+                "custom_cost": true
+            }
+        ]
+    },
+    "3d_printer_sls": {
+        "display_name":"3D Printer (SLS)",
+        "unit_label": "Powder (g)",
+        "unit_suffix": "g",
+        "materials": [
+            {
+                "name":"Nylon 12 Powder",
+                "cost_per_unit": "0.40"
+            },
+            {
+                "name": "Other",
+                "cost_per_unit": 0.0,
+                "custom_cost": true
+            }
+        ]
+    },
+    "laser_cutter": {
+        "display_name": "Laser Cutter",
+        "unit_label": "Area (in\u00b2)",
+        "unit_suffix": "in\u00b2",
+        "specific_machines": [
+            "Pro 48",
+            "Pro 24 Metal",
+            "Maker 24"
+        ],
+        "materials": [
+            {
+                "name": "Clear Acrylic",
+                "cost_per_unit": 0.1
+            },
+            {
+                "name": "White Acrylic",
+                "cost_per_unit": 0.1
+            },
+            {
+                "name": "Black Acrylic",
+                "cost_per_unit": 0.1
+            },
+            {
+                "name": "Wood",
+                "cost_per_unit": 0.1
+            },
+            {
+                "name": "Cardboard",
+                "cost_per_unit": 0.0
+            },
+            {
+                "name": "Other",
+                "cost_per_unit": 0.0,
+                "custom_cost": true
+            }
+        ]
+    },
+    "embroidery_machine": {
+        "display_name": "Embroidery Machine",
+        "unit_label": "Stitches",
+        "unit_suffix": "stitches",
+        "materials": [
+            {
+                "name": "Standard Thread",
+                "cost_per_unit": 0.0001
+            },
+            {
+                "name": "Other",
+                "cost_per_unit": 0.0,
+                "custom_cost": true
+            }
+        ]
+    },
+    "water_jet": {
+        "display_name": "Water Jet",
+        "unit_label": "Material Weight (lb)",
+        "unit_suffix": "lb",
+        "materials": [
+            {
+                "name": "Garnet Abrasive",
+                "cost_per_unit": 2.5
+            },
+            {
+                "name": "Other",
+                "cost_per_unit": 0.0,
+                "custom_cost": true
+            }
+        ]
+    },
+    "vinyl_printer": {
+        "display_name": "Vinyl Printer",
+        "unit_label": "Length (linear ft)",
+        "unit_suffix": "ft",
+        "materials": [
+            {
+                "name": "24-inch Wide Vinyl",
+                "cost_per_unit": 5.0
+            },
+            {
+                "name": "48-inch Wide Vinyl",
+                "cost_per_unit": 6.0
+            },
+            {
+                "name": "56-inch Wide Vinyl",
+                "cost_per_unit": 7.0
+            },
+            {
+                "name": "Other",
+                "cost_per_unit": 0.0,
+                "custom_cost": true
+            }
+        ]
+    }
+}
