@@ -1,0 +1,39 @@
+/* --- Load the local Inter font files --- */
+
+/* Inter 400 (Regular) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  src: "../fonts/Inter-Regular.woff2" format('woff2');
+  font-display: swap;
+}
+/* Inter 500 (Medium) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  src: "../fonts/Inter-Medium.woff2" format('woff2');
+  font-display: swap;
+}
+/* Inter 600 (Semi-bold) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  src: "../fonts/Inter-SemiBold.woff2" format('woff2');
+  font-display: swap;
+}
+/* Inter 700 (Bold) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  src: "../fonts/Inter-Bold.woff2" format('woff2');
+  font-display: swap;
+}
+
+/* --- Apply the font to the body --- */
+body {
+    font-family: 'Inter', sans-serif;
+}
