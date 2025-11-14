@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Job: {{ machine.display_name }}</title>
+    <script src="../static/js/tailwind.js"></script>
+    <link href="../static/css/inter-font.css" rel="stylesheet">
+    <link href="../static/favicon.png" rel="shortcut icon" />
+     <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hidden { display: none; }
+        :root {
+            /* --- Theme Colors --- */
+            /* Change these hex codes to theme your application */
+            
+            /* Primary */
+            --color-primary-600: #007A52;
+            --color-primary-700: #00A36D; /* hover over element color- brighter*/
+            --color-primary-ring: #00A36D; /* 500-level for ring */
+
+            /* Secondary */
+            --color-secondary-600: #4b5563;
+            --color-secondary-700: #374151;
+            --color-secondary-ring: #6b7280; /* 500-level */  
+        }
+        
+        /* Style for required fields that are not valid */
+        input:invalid, select:invalid {
+            border-color: #e53e3e; /* Red border for invalid fields */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-2xl">
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">{{ machine.display_name }}</h1>
+                <p class="text-gray-500 mt-2">Enter the job details to print a receipt.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="mb-6 space-y-3">
+                {% for category, message in messages %}
+                  <div class="p-4 rounded-lg {% if category == 'error' %} bg-red-100 text-red-800 {% elif category == 'info' %} bg-blue-100 text-blue-800 {% else %} bg-green-100 text-green-800 {% endif %}">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+            
+            <form action="{{ url_for('job_form', machine_id=machine_id) }}" method="post" class="space-y-6">
+<!-- source buttons -->               
+                <div> 
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Source</label>
+                    <div id="source_group" class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                        <!-- Added 'required' to all radio buttons -->
+                        <label class="flex items-center"><input type="radio" name="source" value="SFL" class="h-4 w-4 text-[var(--color-radio)] border-gray-300 focus:ring-[var(--color-primary-ring)]" required checked> <span class="ml-2 text-sm text-gray-600">SFL</span></label>
+                        <label class="flex items-center"><input type="radio" name="source" value="Personal" class="h-4 w-4 text-[var(--color-radio)] border-gray-300 focus:ring-[var(--color-primary-ring)]" required> <span class="ml-2 text-sm text-gray-600">Personal</span></label>
+                        <label class="flex items-center"><input type="radio" name="source" value="Class" class="h-4 w-4 text-[var(--color-radio)] border-gray-300 focus:ring-[var(--color-primary-ring)]" required> <span class="ml-2 text-sm text-gray-600">Class</span></label>
+                        <label class="flex items-center"><input type="radio" name="source" value="Club" class="h-4 w-4 text-[var(--color-radio)] border-gray-300 focus:ring-[var(--color-primary-ring)]" required> <span class="ml-2 text-sm text-gray-600">Club</span></label>
+                        <label class="flex items-center"><input type="radio" name="source" value="Lab" class="h-4 w-4 text-[var(--color-radio)] border-gray-300 focus:ring-[var(--color-primary-ring)]" required> <span class="ml-2 text-sm text-gray-600">Lab</span></label>
+                    </div>
+                </div>
+
+                <div id="user_info_wrapper" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div id="user_name_wrapper">
+                        <label for="user_name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                        <!-- Added 'required' -->
+                        <input type="text" name="user_name" id="user_name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                    </div>
+                    <div id="email_wrapper">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <!-- Added 'required' -->
+                        <input type="email" name="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                    </div>
+                </div>
+
+                <div id="group_name_wrapper" class="hidden">
+                    <label for="group_name" class="block text-sm font-medium text-gray-700 mb-1">Class/Club/Lab</label>
+                    <!-- Added 'required' (will be managed by JS) -->
+                    <input type="text" name="group_name" id="group_name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                </div>
+
+                {% if machine.specific_machines %}
+                <div>
+                    <label for="specific_machine" class="block text-sm font-medium text-gray-700 mb-1">Specific Machine</label>
+                    <!-- Added 'required' -->
+                    <select name="specific_machine" id="specific_machine" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                        {% for unit in machine.specific_machines %}
+                        <option value="{{ unit }}" {% if loop.first %}selected{% endif %}>{{ unit }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+
+                <hr class="border-gray-200">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <div>
+                        <label for="material_type" class="block text-sm font-medium text-gray-700 mb-1">Material Type</label>
+                        <!-- Added 'required' -->
+                        <select name="material_type" id="material_type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                            {% for material in machine.materials %}
+                            <option value="{{ material.name }}" data-cost="{{ material.cost_per_unit }}" data-custom="{{ 'true' if material.custom_cost else 'false' }}">
+                                {{ material.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="material_amount" class="block text-sm font-medium text-gray-700 mb-1">{{ machine.unit_label }}</label>
+                        <!-- Added 'required' -->
+                        <input type="number" name="material_amount" id="material_amount" min="0" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                    </div>
+                </div>
+
+                <!-- --- NEW FIELDS FOR FDM --- -->
+                {% if machine_id == '3d_printer_fdm' %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="filament_brand" class="block text-sm font-medium text-gray-700 mb-1">Filament Brand</label>
+                        <!-- Added 'required' -->
+                        <input type="text" name="filament_brand" id="filament_brand" placeholder="e.g., Prusament, eSun" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                    </div>
+                    <div>
+                        <label for="filament_color" class="block text-sm font-medium text-gray-700 mb-1">Filament Color</label>
+                        <!-- Added 'required' -->
+                        <input type="text" name="filament_color" id="filament_color" placeholder="e.g., Galaxy Black" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                    </div>
+                </div>
+                {% endif %}
+                <!-- --- END NEW FIELDS --- -->
+
+                <div id="other_material_wrapper" class="hidden space-y-6">
+                    <div id="other_material_name_wrapper">
+                        <label for="other_material_name" class="block text-sm font-medium text-gray-700 mb-1">"Other" Material Name</label>
+                        <!-- Added 'required' (will be managed by JS) -->
+                        <input type="text" name="other_material_name" id="other_material_name" placeholder="e.g., Special Wood Veneer" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                    </div>
+                    
+                    <div id="custom_cost_wrapper" class="hidden">
+                        <label for="custom_cost" class="block text-sm font-medium text-gray-700 mb-1">Custom Cost per {{ machine.unit_suffix }} ($)</label>
+                        <!-- Added 'required' (will be managed by JS) -->
+                        <input type="number" name="custom_cost" id="custom_cost" placeholder="Enter cost for 'Other' material" min="0" step="0.001" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[var(--color-primary-ring)] focus:border-[var(--color-primary-ring)] transition" required>
+                    </div>
+                </div>
+                
+                <div id="cost-display" class="p-4 bg-gray-50 rounded-lg text-center hidden">
+                    <p class="text-sm text-gray-600">Estimated SFL Cost: <span id="cost" class="font-bold text-lg text-[var(--color-primary-600)]">$0.00</span></p>
+                </div>
+
+                <div class="pt-4 flex items-center justify-between">
+                    <a href="/" class="w-1/3 text-center bg-[var(--color-secondary-600)] text-white font-bold py-3 px-4 rounded-lg hover:bg-[var(--color-secondary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-secondary-ring)] transition-transform transform hover:scale-105">
+                        Back to Machines
+                    </a>
+                    <button type="submit" class="w-1/2 bg-[var(--color-primary-600)] text-white font-bold py-3 px-4 rounded-lg hover:bg-[var(--color-primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary-ring)] transition-transform transform hover:scale-105">
+                        Log Job & Print Receipt
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    // --- Data from Flask ---
+    const materialCosts = JSON.parse('{{ materials | safe }}') || {};
+    // --- Function Definitions ---
+    // We define all our helper functions here, outside the DOM loader.
+
+    /**
+     * Gets the value of the currently selected "Source" radio button.
+     */
+    function getSelectedSource() {
+        // We find the element *inside* the function, just in case.
+        const selectedRadio = document.querySelector('input[name="source"]:checked');
+        return selectedRadio ? selectedRadio.value : 'SFL'; // Default to SFL if none
+    }
+
+    /**
+     * Toggles the visibility of the "Group Name" field.
+     * The "User/Email" fields are now always visible.
+     * --- NEW: Dynamically adds/removes 'required' from group_name ---
+     */
+    function toggleNameFields() {
+        const source = getSelectedSource();
+        const isGroup = (source === 'Club' || source === 'Class' || source === 'Lab');
+
+        // Find elements
+        const userInfoWrapper = document.getElementById('user_info_wrapper');
+        const groupNameWrapper = document.getElementById('group_name_wrapper');
+        const groupNameInput = document.getElementById('group_name');
+
+        // Toggle visibility
+        // User info wrapper is always visible
+        if (userInfoWrapper) userInfoWrapper.classList.remove('hidden');
+        
+        // Group name wrapper is shown only for group sources
+        if (groupNameWrapper && groupNameInput) {
+            groupNameWrapper.classList.toggle('hidden', !isGroup);
+            // --- NEW: Set 'required' only if visible ---
+            groupNameInput.required = isGroup;
+        }
+             
+        // Clear group name input if not a group
+        if (!isGroup) {
+            if (groupNameInput) groupNameInput.value = '';
+        }
+    }
+
+    /**
+     * Toggles the "Other Material" and "Custom Cost" fields based on selections.
+     * After toggling, it calls calculateCost() to update the price.
+     * --- NEW: Dynamically adds/removes 'required' from conditional fields ---
+     */
+    function toggleOtherAndCustomFields() {
+        const source = getSelectedSource();
+
+        // Find elements
+        const materialTypeSelect = document.getElementById('material_type');
+        const otherMaterialWrapper = document.getElementById('other_material_wrapper');
+        const otherMaterialNameWrapper = document.getElementById('other_material_name_wrapper');
+        const customCostWrapper = document.getElementById('custom_cost_wrapper');
+        // --- NEW: Get inputs themselves ---
+        const otherMaterialNameInput = document.getElementById('other_material_name');
+        const customCostInput = document.getElementById('custom_cost');
+
+
+        // Safety check for elements
+        if (!materialTypeSelect || !otherMaterialWrapper || !otherMaterialNameWrapper || !customCostWrapper || !otherMaterialNameInput || !customCostInput) {
+            console.error("Error: Could not find all material fields.");
+            return;
+        }
+
+        // Check if "Other" is selected
+        let isCustom = false;
+        if (materialTypeSelect.options.length > 0) {
+            const selectedOption = materialTypeSelect.options[materialTypeSelect.selectedIndex];
+            if (selectedOption) {
+                isCustom = selectedOption.dataset.custom === 'true';
+            }
+        }
+
+        // Show "Other" parent wrapper if 'Other' is selected
+        otherMaterialWrapper.classList.toggle('hidden', !isCustom);
+        
+        // Show "Other Material Name" box if 'Other' is selected
+        otherMaterialNameWrapper.classList.toggle('hidden', !isCustom);
+        // --- NEW: Set 'required' only if visible ---
+        otherMaterialNameInput.required = isCustom;
+        
+        // --- SFL LISTENER LOGIC ---
+        // Show "Custom Cost" input ONLY if source is "SFL" AND material is "Other"
+        const showCustomCost = (source === 'SFL' && isCustom);
+        customCostWrapper.classList.toggle('hidden', !showCustomCost);
+        // --- NEW: Set 'required' only if visible ---
+        customCostInput.required = showCustomCost;
+        
+        if (!isCustom) {
+            if (otherMaterialNameInput) otherMaterialNameInput.value = '';
+        }
+        if (!showCustomCost) {
+            if (customCostInput) customCostInput.value = '';
+        }
+        
+        calculateCost(); // Update cost anytime fields change
+    }
+
+    /**
+     * Calculates the cost and updates the "Estimated SFL Cost" display.
+     */
+    function calculateCost() {
+        const source = getSelectedSource();
+
+        // Find elements
+        const costDisplay = document.getElementById('cost-display');
+        const costEl = document.getElementById('cost');
+        if (!costDisplay || !costEl) return; // Safety check
+
+        // --- SFL LISTENER LOGIC ---
+        // Show cost display ONLY if source is "SFL"
+        const isSFL = (source === 'SFL');
+        costDisplay.classList.toggle('hidden', !isSFL);
+        
+        if (!isSFL) {
+            costEl.textContent = '$0.00'; // Reset cost text
+            return; // Don't calculate cost if not SFL
+        }
+
+        // Get other elements needed for calculation
+        const materialTypeSelect = document.getElementById('material_type');
+        const materialAmountInput = document.getElementById('material_amount');
+        const customCostInput = document.getElementById('custom_cost');
+        if (!materialTypeSelect || !materialAmountInput || !customCostInput) return;
+
+        // Get values
+        const amount = parseFloat(materialAmountInput.value) || 0;
+        let totalCost = 0;
+        
+        if (materialTypeSelect.options.length > 0) {
+            const selectedOption = materialTypeSelect.options[materialTypeSelect.selectedIndex];
+            if (!selectedOption) {
+                costEl.textContent = '$0.00';
+                return;
+            }
+
+            const materialType = materialTypeSelect.value;
+            const isCustom = selectedOption.dataset.custom === 'true';
+
+            if (isCustom) {
+                const customRate = parseFloat(customCostInput.value) || 0;
+                totalCost = amount * customRate;
+            } else {
+                const costPerUnit = materialCosts[materialType] || 0;
+                totalCost = amount * costPerUnit;
+            }
+        }
+        
+        costEl.textContent = `$${totalCost.toFixed(2)}`;
+    }
+
+
+    // --- Event Listeners Setup ---
+    // This code waits for the HTML page to be fully loaded before running.
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM loaded. Attaching listeners.");
+
+        // Find all the elements we need to listen to
+        const sourceRadios = document.querySelectorAll('input[name="source"]');
+        const materialTypeSelect = document.getElementById('material_type');
+        const materialAmountInput = document.getElementById('material_amount');
+        const customCostInput = document.getElementById('custom_cost');
+
+        // --- Run initial setup ---
+        // Set the correct fields to show/hide when the page first loads
+        // And set initial 'required' states
+        toggleNameFields();
+        toggleOtherAndCustomFields(); // This also calls calculateCost()
+
+        // --- Attach Listeners ---
+
+        // Listen for changes to the SOURCE radio buttons
+        if (sourceRadios.length > 0) {
+            sourceRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    console.log("Source changed");
+                    toggleNameFields();
+                    toggleOtherAndCustomFields(); // Re-run all logic
+                });
+            });
+        } else {
+            console.error("Could not find source radio buttons.");
+        }
+        
+        // Listen for changes to the MATERIAL dropdown
+        if (materialTypeSelect) {
+            materialTypeSelect.addEventListener('change', () => {
+                console.log("Material changed");
+                toggleOtherAndCustomFields();
+            });
+        } else {
+            console.error("Could not find material_type select.");
+        }
+        
+        // Listen for typing in the AMOUNT input
+        if (materialAmountInput) {
+            materialAmountInput.addEventListener('input', calculateCost);
+        } else {
+            console.error("Could not find material_amount input.");
+        }
+        
+        // Listen for typing in the CUSTOM COST input
+        if (customCostInput) {
+            customCostInput.addEventListener('input', calculateCost);
+        } else {
+            console.error("Could not find custom_cost input.");
+        }
+    });
+</script>
+
+</body>
+</html>
